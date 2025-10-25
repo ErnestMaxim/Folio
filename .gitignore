@@ -1,0 +1,15 @@
+# Ignore environment files
+*.env
+
+# Ignore virtual environments
+venv/
+
+# Ignore Alembic cache files
+backend/alembic/__pycache__/
+backend/alembic/versions/__pycache__/
+
+# Ignore Node.js dependencies
+frontend/node_modules/
+
+# Ignore build artifacts (if applicable)
+frontend/dist/
