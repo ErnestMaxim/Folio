@@ -25,6 +25,8 @@ class User(Base):
     role = Column(String(20), default="member")
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+    
+    loans = relationship("Loan", back_populates="user")
 
 class Author(Base):
     __tablename__ = "authors"

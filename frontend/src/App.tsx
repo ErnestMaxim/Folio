@@ -1,35 +1,79 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { initializeIcons } from '@fluentui/react/lib/Icons';
+import Login from './components/Login';
+import Register from './components/Register';
+import Dashboard from './components/Dashboard';
+import ProtectedRoute from './components/ProtectedRoute';
+import authService from './services/authService';
 
-function App() {
-  const [count, setCount] = useState(0)
+// Initialize Fluent UI icons
+initializeIcons();
 
+const App: React.FC = () => {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <Router>
+      <Routes>
+        {/* Public Routes */}
+        <Route 
+          path="/login" 
+          element={
+            authService.isAuthenticated() ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <Login />
+            )
+          } 
+        />
+        <Route 
+          path="/register" 
+          element={
+            authService.isAuthenticated() ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <Register />
+            )
+          } 
+        />
 
-export default App
+        {/* Protected Routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin Only Routes */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <div>Admin Dashboard</div>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Librarian Routes */}
+        <Route
+          path="/librarian"
+          element={
+            <ProtectedRoute requiredRole="librarian">
+              <div>Librarian Dashboard</div>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Default Route */}
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        
+        {/* 404 Route */}
+        <Route path="*" element={<div>404 - Page Not Found</div>} />
+      </Routes>
+    </Router>
+  );
+};
+
+export default App;
